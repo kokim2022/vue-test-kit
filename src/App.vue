@@ -1,26 +1,54 @@
 <template>
   <div>
-    <button class="button" @click="logInWithFacebook">
+    <button class="button" @click="logInWithFacebook" v-if="pageListings">
       Login with Facebook
     </button>
+    <div v-else>
+      {{ pageListing }}
+    </div>
   </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
   name: "facebookLogin",
+  created() {
+    this.init()
+  },
+  data () {
+    return {
+      authResponse: null,
+      pageListing : null
+    }
+  },
   methods: {
-    async logInWithFacebook() {
+    async init() {
       await this.loadFacebookSDK(document, "script", "facebook-jssdk");
       await this.initFacebook();
-      window.FB.login(function (response) {
-        if (response.authResponse) {
-          alert("You are logged in &amp; cookie set!");
-          // Now you can redirect the user or do an AJAX request to
-          // a PHP script that grabs the signed request from the cookie.
-        } else {
-          alert("User cancelled login or did not fully authorize.");
+    },
+    getPages () {
+      axios.get(`https://graph.facebook.com/v15.0/${this.authResponse.userID}/accounts?fields=name,access_token,picture&access_token=${this.authResponse.accessToken}`)
+      .then (response => {
+        this.pageListing = response.data
+      })
+    },
+    async logInWithFacebook() {
+      window.FB.login(
+        function (response) {
+          if (response.authResponse) {
+            this.authResponse = response.authResponse
+            this.getPages()
+            // Now you can redirect the user or do an AJAX request to
+            // a PHP script that grabs the signed request from the cookie.
+          } else {
+            alert("User cancelled login or did not fully authorize.");
+          }
+        },
+        {
+          scope:
+            "public_profile,email, pages_show_list, pages_messaging, pages_manage_metadata, pages_read_engagement",
         }
-      });
+      );
       return false;
     },
     async initFacebook() {
