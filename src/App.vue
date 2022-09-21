@@ -6,7 +6,7 @@
     </div>
     <fb:login-button
       scope="public_profile,email, pages_show_list, pages_messaging, pages_manage_metadata, pages_read_engagement"
-      onlogin="checkLoginState"
+      onlogin="checkLoginState();"
     >
     </fb:login-button>
   </div>
