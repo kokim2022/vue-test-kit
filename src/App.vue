@@ -1,7 +1,12 @@
 <template>
   <div>
     <pre>{{ pages }}</pre>
-    <button @click="login">Facebook login</button>
+
+    <fb:login-button
+      scope="public_profile,email, pages_show_list, pages_messaging, pages_manage_metadata, pages_read_engagement"
+      :onlogin="checkLoginState"
+    >
+    </fb:login-button>
   </div>
 </template>
 
@@ -14,17 +19,32 @@ export default {
     };
   },
   methods: {
-    login() {
-      FB.login(
-        async function (response) {
-          console.log("response", response);
-          // handle the response
-        },
-        {
-          scope:
-            "public_profile,email, pages_show_list, pages_messaging, pages_manage_metadata, pages_read_engagement",
-        }
-      );
+    statusChangeCallback(response) {
+      // Called with the results from FB.getLoginStatus().
+      console.log("statusChangeCallback");
+      console.log(response); // The current login status of the person.
+      if (response.status === "connected") {
+        // Logged into your webpage and Facebook.
+        this.testAPI();
+      } else {
+        alert("please login")
+      }
+    },
+
+    checkLoginState() {
+      // Called when a person is finished with the Login Button.
+      FB.getLoginStatus(function (response) {
+        // See the onlogin handler
+        this.statusChangeCallback(response);
+      });
+    },
+
+    testAPI() {
+      // Testing Graph API after login.  See statusChangeCallback() for when this call is made.
+      console.log("Welcome!  Fetching your information.... ");
+      FB.api("/me", function (response) {     
+        console.log("me", response) 
+      });
     },
   },
   created() {
