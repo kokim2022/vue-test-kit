@@ -11,5 +11,5 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  publicPath: '/vue-test-kit/'
+  base: '/vue-test-kit/'
 })
