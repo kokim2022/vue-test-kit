@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button class="button" @click="logInWithFacebook" v-if="pageListings">
+    <button class="button" @click="logInWithFacebook" v-if="pageListing == null">
       Login with Facebook
     </button>
     <div v-else>
